@@ -2,44 +2,60 @@
 {% set version = "3.77.0" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/latex2mathml-{{ version }}.tar.gz
-  sha256: e2f501d1878f2e489c3f6f12786bef74c62f712d2770f7f3c837eb20a55d0a1e
+  - url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+    sha256: e2f501d1878f2e489c3f6f12786bef74c62f712d2770f7f3c837eb20a55d0a1e
+  # unimathsymbols.txt is LPPL-1.3-or-later; the sdist omits the full terms.
+  - url: https://www.latex-project.org/lppl/lppl-1-3c.txt
+    sha256: 3d262cdf34dafa6955f703c634a8c238ec44109bc8dd6ef34fb7aa54809f7e66
 
 build:
-  noarch: python
-  script: {{ PYTHON }} -m pip install . -vv
-  number: 0
+  number: 1
+  # osx-64 is outside the supported Anaconda build scope.
+  skip: true  # [py<38 or py>=400 or (osx and x86_64)]
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   entry_points:
     - latex2mathml = latex2mathml.converter:main
     - l2m = latex2mathml.converter:main
 
 requirements:
   host:
-    - python >=3.8,<4.0
+    - python
     - poetry-core
     - pip
   run:
-    - python >=3.8,<4.0
+    - python
+  run_constrained:
+    # Upstream's ^3.8.1 floor excludes only the first 3.8 patch release.
+    - python !=3.8.0
 
 test:
   imports:
     - latex2mathml
+    - latex2mathml.converter
   commands:
     - pip check
     - latex2mathml -V
     - l2m -V
+    - python -c "from latex2mathml.converter import convert; assert '<mi>x</mi>' in convert('x')"
   requires:
     - pip
 
 about:
   home: https://github.com/roniemartinez/latex2mathml
   summary: Pure Python library for LaTeX to MathML conversion
-  license: MIT
-  license_file: LICENSE
+  description: A pure Python converter from LaTeX mathematical expressions to MathML.
+  license: MIT AND LPPL-1.3c
+  license_family: Other
+  license_file:
+    - LICENSE
+    - latex2mathml/unimathsymbols.txt
+    - lppl-1-3c.txt
+  doc_url: https://github.com/roniemartinez/latex2mathml/blob/master/README.md
+  dev_url: https://github.com/roniemartinez/latex2mathml
 
 extra:
   recipe-maintainers:
