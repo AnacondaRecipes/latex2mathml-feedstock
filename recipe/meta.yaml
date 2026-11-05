@@ -13,9 +13,7 @@ source:
     sha256: 3d262cdf34dafa6955f703c634a8c238ec44109bc8dd6ef34fb7aa54809f7e66
 
 build:
-  number: 1
-  # osx-64 is outside the supported Anaconda build scope.
-  skip: true  # [py<38 or py>=400 or (osx and x86_64)]
+  number: 0
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   entry_points:
     - latex2mathml = latex2mathml.converter:main
