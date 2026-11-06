@@ -23,9 +23,6 @@ requirements:
     - pip
   run:
     - python
-  run_constrained:
-    # Upstream's ^3.8.1 floor excludes only the first 3.8 patch release.
-    - python !=3.8.0
 
 test:
   imports:
